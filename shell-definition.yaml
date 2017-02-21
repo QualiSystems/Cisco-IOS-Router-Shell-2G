@@ -1,7 +1,7 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 
 metadata:
-  template_name: Cisco IOS Router Shell
+  template_name: Cisco IOS Router Shell 2 Generation
   template_author: Quali
   template_version: 1.0.0
   template_icon: shell-icon.png
@@ -14,7 +14,7 @@ imports:
 
 node_types:
 
-  vendor.CiscoIOSRouterShell:
+  vendor.CiscoIOSRouterShell_2Gen:
     derived_from: cloudshell.nodes.Router
     #properties:
     #  property_name:
@@ -89,5 +89,5 @@ node_types:
         file: shell-icon.png
         type: tosca.artifacts.File
       driver:
-        file: CiscoiosroutershellDriver.zip
+        file: CiscoIOSRouterShellDriver.zip
         type: tosca.artifacts.File
