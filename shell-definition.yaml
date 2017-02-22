@@ -14,7 +14,7 @@ imports:
 
 node_types:
 
-  vendor.CiscoIOSRouterShell_2Gen:
+  vendor.Cisco IOS Router 2 Gen:
     derived_from: cloudshell.nodes.Router
     #properties:
     #  property_name:
@@ -89,5 +89,5 @@ node_types:
         file: shell-icon.png
         type: tosca.artifacts.File
       driver:
-        file: CiscoIOSRouterShellDriver.zip
+        file: CiscoIOSRouterShell2GenDriver.zip
         type: tosca.artifacts.File
