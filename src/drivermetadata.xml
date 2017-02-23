@@ -2,72 +2,79 @@
     <Layout>
         <Category Name="Hidden Commands">
             <Command Name="shutdown" DisplayName="Shutdown" Tags="" Description="Sends a graceful shutdown to the device"/>
-            <Command Name="run_custom_config_command" DisplayName="Send Custom Config Command" Tags="">
+
+            <Command Name="run_custom_config_command" DisplayName="run_custom_config_command" Tags="">
                 <Parameters>
-                    <Parameter Name="custom_command" Type="String" Mandatory = "True" DisplayName="Command" DefaultValue=""
+                    <Parameter Name="custom_command" Type="String" Mandatory = "True" DisplayName="Custom Command" DefaultValue=""
                                Description="The command to run. Note that commands that require a response are not supported."/>
                 </Parameters>
             </Command>
+
             <Command Name="ApplyConnectivityChanges" DisplayName="ApplyConnectivityChanges" Tags="allow_unreserved">
                 <Parameters>
                     <Parameter Name="request" Type="String" Mandatory = "True" DefaultValue="" Description=""/>
                 </Parameters>
             </Command>
+
             <Command Name="orchestration_save" >
                 <Parameters>
                     <Parameter Name="mode" Type="Lookup" Mandatory = "True" AllowedValues="shallow,deep"  DefaultValue="shallow"
-                               Description="Snapshot save mode, can be one of two values 'shallow' (default) or 'deep'"/>
+                               Description="The save mode. Possible values are 'Shallow' and 'Deep'. In a networking device both modes will have the same behavior of saving a configuration file."/>
                     <Parameter Name="custom_params" Type="String" Mandatory = "False"  DefaultValue=""
-                               Description=" Set of custom parameters for the save operation"/>
-
+                               Description="A JSON data structure with optional parameters. If no parameters are passed the defaults defined on the root resource and in the Save command will be used."/>
                 </Parameters>
             </Command>
+
             <Command Name="orchestration_restore" >
                 <Parameters>
                     <Parameter Name="saved_details" Type="String" Mandatory = "True" DefaultValue=""
-                               Description="A JSON string representing the state to restore including saved artifacts and info"/>
+                               Description="A composite data structure that represents the details of the snapshot. The value that will be passed as input must be the same as the exact value that the save function returned."/>
                     <Parameter Name="custom_params" Type="String" Mandatory = "False"  DefaultValue=""
-                               Description=" Set of custom parameters for the restore operation"/>
-
+                               Description="A JSON data structure with optional parameters. If no parameters are passed the defaults defined on the root resource and in the Restore command will be used."/>
                 </Parameters>
             </Command>
-            <Command Name="health_check"  Tags="" Description="Checks if the device is up and connectable"/>
 
         </Category>
-        <Command Name="run_custom_command" DisplayName="Send Custom Command" Tags="" Description="Executes a custom command on the device">
+        <Command Name="health_check"  Tags=""
+                 Description="Performs checks on the device that validates that the Shell can work. In a networking device this checks usually include connectivity check for the protocols used by the Shell. The healtcheck result will be visible in the resource live status and command output."/>
+
+        <Command Name="run_custom_command" DisplayName="Run Custom Command" Tags="" Description="Executes any custom command entered in the input on the device.">
             <Parameters>
                 <Parameter Name="custom_command" Type="String" Mandatory = "True" DisplayName="Command" DefaultValue=""
                            Description="The command to run. Note that commands that require a response are not supported."/>
             </Parameters>
         </Command>
-        <Command Name="save" DisplayName="Save" Tags="" Description="Creates a configuration file and saves it to the provided destination">
+
+        <Command Name="save" DisplayName="Save" Tags="" Description="Create and save a configuration file">
             <Parameters>
                 <Parameter Name="configuration_type" Type="Lookup" AllowedValues="Startup,Running" Mandatory = "False"  DefaultValue=""
-                           DisplayName="Configuration Type" Description="Specify whether the file should update the startup or running config. 'Startup' configuration is not supported on all switches."/>
+                           DisplayName="Configuration Type" Description="The type of configuration that will be saved. Possible values are StartUp and Running. If kept empty the default configuration type that will be used is Running."/>
                 <Parameter Name="folder_path" Type="String" Mandatory = "False" DisplayName="Folder Path" DefaultValue=""
-                           Description="The path in which the configuration file will be saved. The path should include the protocol type (for example tftp://asdf)"/>
+                           Description="The path in which the configuration file will be saved. Shouldn't include the name of the file but only the folder. This input is optional and if empty the value will be taken from the 'Backup Location' attribute on the root resource. The path should include the protocol type, for TFTP use 'tftp://server_address/folder1', for FTP use 'ftp://username:password@server_address/folder1'."/>
                   <Parameter Name="vrf_management_name" Type="String" Mandatory = "False" DisplayName="VRF Management Name" DefaultValue=""
-                           Description="Optional. Virtual routing and Forwarding management name"/>
+                           Description="Optional. Virtual Routing and Forwarding is used to share same/overlapping sub-net on the same core. Service Providers use it to share their backbone with multiple customers and also assign a management VRF which they use to manage the devices. If kept empty the value in the 'VRF Management Name' attribute on the root model will be used."/>
             </Parameters>
         </Command>
+
         <Command Name="restore" DisplayName="Restore" Tags="" Description="Restores a configuration file">
             <Parameters>
                 <Parameter Name="path" Type="String" Mandatory = "True" DefaultValue="" DisplayName="Path"
-                           Description="The path to the configuration file, including the configuration file name. The path should include the protocol type (for example tftp://asdf)."/>
+                           Description="The path to the configuration file, including the configuration file name. The path should include the protocol type, for TFTP use 'tftp://asdf', for FTP use 'ftp://username:password@server_address/folder1/file1.bin'."/>
                 <Parameter Name="configuration_type" Type="Lookup" AllowedValues="Startup,Running" Mandatory = "False"  DefaultValue=""
-                           DisplayName="Configuration Type" Description="Specify whether the file should update the startup or running config. 'Startup' configuration is not supported on all switches."/>
+                           DisplayName="Configuration Type" Description="The type of configuration that will be saved. Possible values are StartUp and Running. If kept empty the default configuration type that will be used is Running."/>
                 <Parameter Name="restore_method" Type="Lookup" AllowedValues="Override,Append"  Mandatory = "False" DefaultValue=""
-                           DisplayName="Restore Method" Description="Determines whether the restore should append or override the current configuration."/>
+                           DisplayName="Restore Method" Description="The restore method to use when restoring the configuration file. Possible Values are Append and Override. If kept empty the restore method will be Override."/>
                 <Parameter Name="vrf_management_name" Type="String" Mandatory = "False" DisplayName="VRF Management Name" DefaultValue=""
-                           Description="Optional. Virtual routing and Forwarding management name"/>
+                           Description="Optional. Virtual Routing and Forwarding is used to share same/overlapping sub-net on the same core. Service Providers use it to share their backbone with multiple customers and also assign a management VRF which they use to manage the devices. If kept empty the value in the 'VRF Management Name' attribute on the root model will be used."/>
             </Parameters>
         </Command>
+
         <Command Name="load_firmware" DisplayName="Load Firmware" Tags="" Description="Upload and updates firmware on the resource">
             <Parameters>
                 <Parameter Name="path" Type="String" Mandatory = "True" DisplayName="Path" DefaultValue=""
-                           Description="Path to tftp:// server where firmware file is stored."/>
+                           Description="The path to the firmware file, including the firmware file name. The path should include the protocol type, for TFTP use 'tftp://server_address/folder1/file1.bin', for FTP use 'ftp://username:password@server_address/folder1/file1.bin'."/>
                 <Parameter Name="vrf_management_name" Type="String" Mandatory = "False" DisplayName="VRF Management Name" DefaultValue=""
-                           Description="Optional. Virtual routing and Forwarding management name"/>
+                           Description="Optional. Virtual Routing and Forwarding is used to share same/overlapping sub-net on the same core. Service Providers use it to share their backbone with multiple customers and also assign a management VRF which they use to manage the devices. If kept empty the value in the 'VRF Management Name' attribute on the root model will be used."/>
             </Parameters>
         </Command>
     </Layout>
