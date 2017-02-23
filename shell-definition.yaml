@@ -24,6 +24,8 @@ node_types:
     #    constraints:
     #      - valid_values: [fast, slow]
     capabilities:
+      concurrent_execution:
+        type: cloudshell.capabilities.SupportConcurrentCommands
       auto_discovery_capability:
         type: cloudshell.capabilities.AutoDiscovery
         properties:

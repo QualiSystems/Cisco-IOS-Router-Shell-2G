@@ -3,7 +3,7 @@
         <Category Name="Hidden Commands">
             <Command Name="shutdown" DisplayName="Shutdown" Tags="" Description="Sends a graceful shutdown to the device"/>
 
-            <Command Name="run_custom_config_command" DisplayName="run_custom_config_command" Tags="">
+            <Command Name="run_custom_config_command" DisplayName="run_custom_config_command" Description="Executes any custom config command entered in the input on the device." Tags="">
                 <Parameters>
                     <Parameter Name="custom_command" Type="String" Mandatory = "True" DisplayName="Custom Command" DefaultValue=""
                                Description="The command to run. Note that commands that require a response are not supported."/>
