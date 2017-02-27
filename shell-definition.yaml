@@ -82,6 +82,7 @@ node_types:
           CLI Connection Type:
             type: string
             description: The CLI connection type that will be used by the driver. Possible values are Auto, Console, SSH, Telnet and TCP. If Auto is selected the driver will choose the available connection type automatically. Default value is Auto.
+            default: Auto
           CLI TCP Port:
             description: TCP Port to user for CLI connection. If kept empty a default CLI port will be used based on the chosen protocol, for example Telnet will use port 23.
             type: Numeric
