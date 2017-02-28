@@ -14,7 +14,7 @@ imports:
 
 node_types:
 
-  vendor.Cisco IOS Router 2 Gen:
+  vendor.Cisco IOS Router 2G:
     derived_from: cloudshell.nodes.Router
     #properties:
     #  property_name:
