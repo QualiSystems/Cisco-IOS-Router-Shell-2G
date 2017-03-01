@@ -298,4 +298,19 @@ class CiscoiosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         pass
 
     def shutdown(self, context):
-        pass
+        """ Shutdown device
+
+        :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
+        :return:
+        """
+
+        logger = get_logger_with_thread_id(context)
+        api = get_api(context)
+
+        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
+                                                                  supported_os=self.SUPPORTED_OS,
+                                                                  context=context)
+
+        state_operations = StateRunner(cli=self._cli, logger=logger, api=api, resource_config=resource_config)
+        return state_operations.shutdown()
+
