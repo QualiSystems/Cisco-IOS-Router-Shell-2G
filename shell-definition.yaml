@@ -108,6 +108,7 @@ node_types:
           Console Port:
             description: The port on the console server, usually TCP port, which the device is associated with.
             type: integer
+            default: 0
           Console Password:
             type: cloudshell.datatypes.Password
           CLI Connection Type:
