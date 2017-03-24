@@ -42,6 +42,7 @@ node_types:
             description: User with administrative privileges
             type: string
           Password:
+            description: The password is required by some CLI protocols such as Telnet and is required according to the device configuration.
             type: cloudshell.datatypes.Password
           Enable Password:
             description: The enable password is required by some CLI protocols such as Telnet and is required according to the device configuration.
@@ -79,6 +80,36 @@ node_types:
             description: If set to True SNMP will be disabled automatically by the Shell after the Autoload command execution is completed. False by default.
             type: boolean
             default: false
+          Backup Location:
+            description: Used by the save/restore orchestration to determine where backups should be saved.
+            type: string
+          Backup Type:
+            description: Supported protocols for saving and restoring of configuration and firmware files. Possible values are 'File System' 'FTP' and 'TFTP'. Default value is 'File System'.
+            type: string
+            default: File System
+          Backup User:
+            description: Username for the storage server used for saving and restoring of configuration and firmware files.
+            type: string
+          Backup Password:
+            description: Password for the storage server used for saving and restoring of configuration and firmware files.
+            type: cloudshell.datatypes.Password
+          Power Management:
+            type: boolean
+            default: true
+            description: Used by the power management orchestration, if enabled, to determine whether to automatically manage the device power status. Enabled by default.
+          VRF Management Name:
+            description: The default VRF Management to use if configured in the network and no such input was passed to the Save or Restore command.
+            type: string
+          Console Server IP Address:
+            description: The IP address of the console server, in IPv4 format.
+            type: string
+          Console User:
+            type: string
+          Console Port:
+            description: The port on the console server, usually TCP port, which the device is associated with.
+            type: integer
+          Console Password:
+            type: cloudshell.datatypes.Password
           CLI Connection Type:
             type: string
             description: The CLI connection type that will be used by the driver. Possible values are Auto, Console, SSH, Telnet and TCP. If Auto is selected the driver will choose the available connection type automatically. Default value is Auto.
