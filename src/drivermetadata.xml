@@ -35,7 +35,7 @@
             </Command>
 
         </Category>
-        <Command Name="health_check"  Tags=""
+        <Command Name="health_check"  DisplayName="Health Check" Tags=""
                  Description="Performs checks on the device that validates that the Shell can work. In a networking device this checks usually include connectivity check for the protocols used by the Shell. The healtcheck result will be visible in the resource live status and command output."/>
 
         <Command Name="run_custom_command" DisplayName="Run Custom Command" Tags="" Description="Executes any custom command entered in the input on the device.">
