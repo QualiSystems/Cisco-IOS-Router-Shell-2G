@@ -3,6 +3,7 @@
 
 
 from cloudshell.devices.driver_helper import get_logger_with_thread_id, get_api, get_cli
+from cloudshell.devices.driver_helper import parse_custom_commands
 from cloudshell.devices.standards.networking.configuration_attributes_structure import create_networking_resource_from_context
 from cloudshell.networking.cisco.runners.cisco_connectivity_runner import \
     CiscoConnectivityRunner as ConnectivityRunner
@@ -82,7 +83,8 @@ class CiscoiosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
                                                                   context=context)
 
         send_command_operations = CommandRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
-        response = send_command_operations.run_custom_command(custom_command=custom_command)
+        response = send_command_operations.run_custom_command(custom_command=parse_custom_commands(custom_command))
+
         return response
 
     def run_custom_config_command(self, context, custom_command):
@@ -101,7 +103,10 @@ class CiscoiosshellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
                                                                   context=context)
 
         send_command_operations = CommandRunner(cli=self._cli, logger=logger, resource_config=resource_config, api=api)
-        result_str = send_command_operations.run_custom_config_command(custom_command=custom_command)
+
+        result_str = send_command_operations.run_custom_config_command(
+            custom_command=parse_custom_commands(custom_command))
+
         return result_str
 
     def ApplyConnectivityChanges(self, context, request):
