@@ -14,7 +14,6 @@ from cloudshell.networking.cisco.runners.cisco_firmware_runner import CiscoFirmw
 from cloudshell.networking.cisco.runners.cisco_run_command_runner import CiscoRunCommandRunner as CommandRunner
 from cloudshell.networking.cisco.runners.cisco_state_runner import CiscoStateRunner as StateRunner
 from cloudshell.networking.networking_resource_driver_interface import NetworkingResourceDriverInterface
-from cloudshell.shell.core.context import ResourceCommandContext
 from cloudshell.shell.core.driver_utils import GlobalLock
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 
