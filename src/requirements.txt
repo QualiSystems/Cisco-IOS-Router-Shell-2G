@@ -1,1 +1,3 @@
-cloudshell-networking-cisco>=5.0,<5.1
+cloudshell-networking-cisco>=5.1,<5.2
+cloudshell-networking-devices>=2.2,<2.3
+cloudshell-shell-core>=3.1,<3.2

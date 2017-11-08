@@ -6,7 +6,7 @@
             <Command Name="run_custom_config_command" DisplayName="run_custom_config_command" Description="Executes any custom config command entered in the input on the device." Tags="">
                 <Parameters>
                     <Parameter Name="custom_command" Type="String" Mandatory = "True" DisplayName="Custom Command" DefaultValue=""
-                               Description="The command to run. Note that commands that require a response are not supported."/>
+                               Description="The command(s) to run. Supports several commands separated by ';' symbol. Note that commands that require a response are not supported."/>
                 </Parameters>
             </Command>
 
@@ -41,7 +41,7 @@
         <Command Name="run_custom_command" DisplayName="Run Custom Command" Tags="" Description="Executes any custom command entered in the input on the device.">
             <Parameters>
                 <Parameter Name="custom_command" Type="String" Mandatory = "True" DisplayName="Command" DefaultValue=""
-                           Description="The command to run. Note that commands that require a response are not supported."/>
+                           Description="The command(s) to run. Supports several commands separated by ';' symbol. Note that commands that require a response are not supported."/>
             </Parameters>
         </Command>
 
