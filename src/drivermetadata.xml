@@ -1,4 +1,4 @@
-<Driver Description="Describe the purpose of your CloudShell shell" MainClass="driver.CiscoiosshellDriver" Name="CiscoiosshellDriver" Version="1.0.0">
+<Driver Description="Describe the purpose of your CloudShell shell" MainClass="driver.CiscoIOSShellDriver" Name="CiscoIOSShellDriver" Version="1.0.0">
     <Layout>
         <Category Name="Hidden Commands">
             <Command Name="shutdown" DisplayName="Shutdown" Tags="" Description="Sends a graceful shutdown to the device"/>
