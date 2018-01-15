@@ -72,6 +72,18 @@ node_types:
             description: The version of SNMP to use. Possible values are v1, v2c and v3.
             constraints:
               - valid_values: [ v1, v2c, v3]
+          SNMP V3 Authentication Protocol:
+            description: Relevant only in case SNMP V3 is in use.
+            type: string
+            default: No Authentication Protocol
+            constraints:
+              - valid_values: [No Authentication Protocol, MD5, SHA]
+          SNMP V3 Privacy Protocol:
+            description: Relevant only in case SNMP V3 is in use.
+            type: string
+            default: No Privacy Protocol
+            constraints:
+              - valid_values: [No Privacy Protocol, DES, 3DES-EDE, AES-128, AES-192, AES-256]
           Enable SNMP:
             description: If set to True and SNMP isn’t enabled yet in the device the Shell will automatically enable SNMP in the device when Autoload command is called. SNMP must be enabled on the device for the Autoload command to run successfully. True by default.
             type: boolean
