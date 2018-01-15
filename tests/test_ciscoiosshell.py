@@ -10,7 +10,7 @@ import unittest
 
 from cloudshell.shell.core.driver_context import ResourceCommandContext
 from mock import patch
-from src.driver import CiscoiosshellDriver
+from src.driver import CiscoIOSShellDriver
 
 
 @patch('src.driver.get_api')
@@ -19,7 +19,7 @@ from src.driver import CiscoiosshellDriver
 @patch('cloudshell.shell.core.driver_context.ResourceCommandContext', autospec=ResourceCommandContext)
 class TestCiscoIOSShellDriver(unittest.TestCase):
     def setUp(self):
-        self.driver = CiscoiosshellDriver()
+        self.driver = CiscoIOSShellDriver()
 
     @patch('src.driver.get_cli')
     def test_initialize(self, mocked_cli, mocked_context, mocked_resource_details, mocked_logger, mocked_api):
