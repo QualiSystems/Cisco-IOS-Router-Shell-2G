@@ -207,7 +207,7 @@ In online mode, the execution server automatically downloads and extracts the ap
 # Typical Workflows 
 
 #### **Workflow 1** - *Save configuration* 
-1. In CloudShell Portal, reserve the **Cisco iOS** resource.
+1. In CloudShell Portal, add the **Cisco iOS** resource to your blueprint and reserve the blueprint.
 
 2. Run the **Save** resource command.
 
@@ -221,7 +221,7 @@ In online mode, the execution server automatically downloads and extracts the ap
 The Startup or Running configuration is saved to a file named *<ResourceName>-<startup/running-config>-<timestamp>*, which will be stored in the folder path you entered above.
 
 #### **Workflow 2** - *Restore configuration* 
-1. In CloudShell Portal, reserve the **Cisco iOS** resource.
+1. In CloudShell Portal, add the **Cisco iOS** resource to your blueprint and reserve the blueprint.
 
 2. Run the **Restore** resource command.
 
@@ -234,7 +234,7 @@ The Startup or Running configuration is saved to a file named *<ResourceName>-<s
 4. Click **Run**.
 
 #### **Workflow 3** - *Load firmware* 
-1. In CloudShell portal, reserve the **Cisco iOS** resource.
+1. In CloudShell Portal, add the **Cisco iOS** resource to your blueprint and reserve the blueprint.
 
 2. Run the **Load Firmware** resource command. 
 
