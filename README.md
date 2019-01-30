@@ -264,3 +264,7 @@ To connect with Quali users and experts from around the world, ask questions and
 
 * SNMP v3 attributes were added to the **Inventory** screen on CloudShell Portal.
 * CLI definition was moved to the driver class to simplify editing.
+
+# Knowing Issues
+
+- Due to the Physical Entity table design, all ports that are missing a SFP or GBIC transceiver will be skipped during **Autoload**.
