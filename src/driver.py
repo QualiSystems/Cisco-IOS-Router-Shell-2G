@@ -1,30 +1,27 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from cloudshell.devices.driver_helper import get_logger_with_thread_id, get_api, get_cli
-from cloudshell.devices.driver_helper import parse_custom_commands
-from cloudshell.devices.standards.networking.configuration_attributes_structure import \
-    create_networking_resource_from_context
-from cloudshell.networking.cisco.cli.cisco_cli_handler import CiscoCliHandler as CliHandler
-from cloudshell.networking.cisco.runners.cisco_connectivity_runner import \
-    CiscoConnectivityRunner as ConnectivityRunner
-from cloudshell.networking.cisco.runners.cisco_configuration_runner import \
-    CiscoConfigurationRunner as ConfigurationRunner
-from cloudshell.networking.cisco.snmp.cisco_snmp_handler import CiscoSnmpHandler as SNMPHandler
-from cloudshell.networking.cisco.runners.cisco_autoload_runner import \
-    CiscoAutoloadRunner as AutoloadRunner
-from cloudshell.networking.cisco.runners.cisco_firmware_runner import \
-    CiscoFirmwareRunner as FirmwareRunner
 
-from cloudshell.devices.runners.run_command_runner import RunCommandRunner as CommandRunner
-from cloudshell.devices.runners.state_runner import StateRunner as StateRunner
-from cloudshell.networking.networking_resource_driver_interface import NetworkingResourceDriverInterface
+from cloudshell.networking.cisco.cli.cisco_cli_handler import CiscoCliHandler as CliHandler, CiscoCli
+from cloudshell.networking.cisco.flows.cisco_autoload_flow import CiscoSnmpAutoloadFlow as AutoloadFlow
+from cloudshell.networking.cisco.flows.cisco_configuration_flow import CiscoConfigurationFlow as ConfigurationFlow
+from cloudshell.networking.cisco.flows.cisco_load_firmware_flow import CiscoLoadFirmwareFlow as FirmwareFlow
+from cloudshell.networking.cisco.flows.cisco_run_command_flow import CiscoRunCommandFlow as CommandFlow
+from cloudshell.networking.cisco.flows.cisco_state_flow import CiscoStateFlow as StateFlow
+from cloudshell.networking.cisco.snmp.cisco_snmp_handler import CiscoSnmpHandler as SNMPHandler
+
 from cloudshell.shell.core.driver_utils import GlobalLock
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
+from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionContext
+from cloudshell.shell.core.session.logging_session import LoggingSessionContext
+from cloudshell.shell.standards.networking.autoload_model import NetworkingResourceModel
+from cloudshell.shell.standards.networking.driver_interface import NetworkingResourceDriverInterface
+from cloudshell.shell.standards.networking.resource_config import NetworkingResourceConfig
 
 
 class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
     SUPPORTED_OS = [r"CAT[ -]?OS", r"IOS[ -]?X?[E]?"]
     SHELL_NAME = "Cisco IOS Router 2G"
+
     # SHELL_NAME = ""
 
     def __init__(self):
@@ -37,12 +34,11 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :type context: cloudshell.shell.core.context.driver_context.InitCommandContext
         """
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context)
 
-        session_pool_size = int(resource_config.sessions_concurrency_limit)
-        self._cli = get_cli(session_pool_size)
+        self._cli = CiscoCli(resource_config)
         return 'Finished initializing'
 
     @GlobalLock.lock
@@ -54,20 +50,23 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :rtype: str
         """
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
-        snmp_handler = SNMPHandler(resource_config, logger, api, cli_handler)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
+        snmp_handler = SNMPHandler(resource_config, logger, cli_handler)
 
-        autoload_operations = AutoloadRunner(logger=logger,
-                                             resource_config=resource_config,
-                                             snmp_handler=snmp_handler)
+        autoload_operations = AutoloadFlow(logger=logger,
+                                           snmp_handler=snmp_handler)
         logger.info('Autoload started')
-        response = autoload_operations.discover()
+        resource_model = NetworkingResourceModel(resource_config.name,
+                                                 resource_config.shell_name,
+                                                 resource_config.family_name)
+
+        response = autoload_operations.discover(resource_config.supported_os, resource_model)
         logger.info('Autoload completed')
         return response
 
@@ -79,17 +78,17 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :rtype: str
         """
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
 
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
-        send_command_operations = CommandRunner(logger=logger, cli_handler=cli_handler)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
+        send_command_operations = CommandFlow(logger=logger, cli_handler=cli_handler)
 
-        response = send_command_operations.run_custom_command(custom_command=parse_custom_commands(custom_command))
+        response = send_command_operations.run_custom_command(custom_command=custom_command)
 
         return response
 
@@ -101,18 +100,18 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :rtype: str
         """
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
 
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
-        send_command_operations = CommandRunner(logger=logger, cli_handler=cli_handler)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
+        send_command_operations = CommandFlow(logger=logger, cli_handler=cli_handler)
 
         result_str = send_command_operations.run_custom_config_command(
-            custom_command=parse_custom_commands(custom_command))
+            custom_command=custom_command)
 
         return result_str
 
@@ -150,12 +149,12 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :return str saved configuration file name:
         """
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
 
         if not configuration_type:
             configuration_type = 'running'
@@ -163,14 +162,13 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         if not vrf_management_name:
             vrf_management_name = resource_config.vrf_management_name
 
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
-        configuration_operations = ConfigurationRunner(cli_handler=cli_handler,
-                                                       logger=logger,
-                                                       resource_config=resource_config,
-                                                       api=api)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
+        configuration_flow = ConfigurationFlow(cli_handler=cli_handler,
+                                               logger=logger,
+                                               resource_config=resource_config)
         logger.info('Save started')
-        response = configuration_operations.save(folder_path=folder_path, configuration_type=configuration_type,
-                                                 vrf_management_name=vrf_management_name)
+        response = configuration_flow.save(folder_path=folder_path, configuration_type=configuration_type,
+                                           vrf_management_name=vrf_management_name)
         logger.info('Save completed')
         return response
 
@@ -185,12 +183,12 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :param vrf_management_name: VRF management Name
         """
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
 
         if not configuration_type:
             configuration_type = 'running'
@@ -201,15 +199,14 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         if not vrf_management_name:
             vrf_management_name = resource_config.vrf_management_name
 
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
-        configuration_operations = ConfigurationRunner(cli_handler=cli_handler,
-                                                       logger=logger,
-                                                       resource_config=resource_config,
-                                                       api=api)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
+        configuration_flow = ConfigurationFlow(cli_handler=cli_handler,
+                                               logger=logger,
+                                               resource_config=resource_config)
         logger.info('Restore started')
-        configuration_operations.restore(path=path, restore_method=restore_method,
-                                         configuration_type=configuration_type,
-                                         vrf_management_name=vrf_management_name)
+        configuration_flow.restore(path=path, restore_method=restore_method,
+                                   configuration_type=configuration_type,
+                                   vrf_management_name=vrf_management_name)
         logger.info('Restore completed')
 
     def orchestration_save(self, context, mode, custom_params):
@@ -224,21 +221,20 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         if not mode:
             mode = 'shallow'
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
 
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
-        configuration_operations = ConfigurationRunner(cli_handler=cli_handler,
-                                                       logger=logger,
-                                                       resource_config=resource_config,
-                                                       api=api)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
+        configuration_flow = ConfigurationFlow(cli_handler=cli_handler,
+                                               logger=logger,
+                                               resource_config=resource_config)
 
         logger.info('Orchestration save started')
-        response = configuration_operations.orchestration_save(mode=mode, custom_params=custom_params)
+        response = configuration_flow.orchestration_save(mode=mode, custom_params=custom_params)
         logger.info('Orchestration save completed')
         return response
 
@@ -250,22 +246,21 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :param custom_params: json with custom restore parameters
         """
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
 
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
-        configuration_operations = ConfigurationRunner(cli_handler=cli_handler,
-                                                       logger=logger,
-                                                       resource_config=resource_config,
-                                                       api=api)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
+        configuration_flow = ConfigurationFlow(cli_handler=cli_handler,
+                                               logger=logger,
+                                               resource_config=resource_config)
 
         logger.info('Orchestration restore started')
-        configuration_operations.orchestration_restore(saved_artifact_info=saved_artifact_info,
-                                                       custom_params=custom_params)
+        configuration_flow.orchestration_restore(saved_artifact_info=saved_artifact_info,
+                                                 custom_params=custom_params)
         logger.info('Orchestration restore completed')
 
     @GlobalLock.lock
@@ -277,20 +272,20 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :param vrf_management_name: VRF management Name
         """
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
 
         if not vrf_management_name:
             vrf_management_name = resource_config.vrf_management_name
 
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
 
         logger.info('Start Load Firmware')
-        firmware_operations = FirmwareRunner(cli_handler=cli_handler, logger=logger)
+        firmware_operations = FirmwareFlow(cli_handler=cli_handler, logger=logger)
         response = firmware_operations.load_firmware(path=path, vrf_management_name=vrf_management_name)
         logger.info('Finish Load Firmware: {}'.format(response))
 
@@ -302,15 +297,15 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :rtype: str
         """
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
 
-        state_operations = StateRunner(logger=logger, api=api, resource_config=resource_config, cli_handler=cli_handler)
+        state_operations = StateFlow(logger=logger, api=api, resource_config=resource_config, cli_handler=cli_handler)
         return state_operations.health_check()
 
     def cleanup(self):
@@ -323,14 +318,14 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         :return:
         """
 
-        logger = get_logger_with_thread_id(context)
-        api = get_api(context)
+        logger = LoggingSessionContext.get_logger_for_context(context)
+        api = CloudShellSessionContext(context).get_api()
 
-        resource_config = create_networking_resource_from_context(shell_name=self.SHELL_NAME,
-                                                                  supported_os=self.SUPPORTED_OS,
-                                                                  context=context)
+        resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
+                                                                supported_os=self.SUPPORTED_OS,
+                                                                context=context, api=api)
 
-        cli_handler = CliHandler(self._cli, resource_config, logger, api)
-        state_operations = StateRunner(logger=logger, api=api, resource_config=resource_config, cli_handler=cli_handler)
+        cli_handler = self._cli.get_cli_handler(resource_config, logger)
+        state_operations = StateFlow(logger=logger, api=api, resource_config=resource_config, cli_handler=cli_handler)
 
         return state_operations.shutdown()
