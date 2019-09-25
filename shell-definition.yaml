@@ -3,14 +3,14 @@
 metadata:
   template_name: Cisco IOS Router Shell 2G
   template_author: Quali
-  template_version: 1.0.0
+  template_version: 3.0.0
   template_icon: shell-icon.png
 
 description: >
  This Shell supports Cisco Router devices that run IOS operating system
 
 imports:
-  - cloudshell_standard: cloudshell_networking_standard_5_0_2.yaml
+  - cloudshell_standard: cloudshell_networking_standard_5_0_4.yaml
 
 node_types:
 
