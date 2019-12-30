@@ -1,6 +1,4 @@
-git+https://github.com/QualiSystems/cloudshell-shell-core.git@dev#egg=cloudshell-shell-core
-git+https://github.com/QualiSystems/cloudshell-cli.git@dev#egg=cloudshell-cli
-git+https://github.com/QualiSystems/cloudshell-snmp.git@dev#egg=cloudshell-snmp
-git+https://github.com/QualiSystems/cloudshell-networking.git@dev#egg=cloudshell-networking
-git+https://github.com/QualiSystems/cloudshell-networking-devices.git@dev#egg=cloudshell-networking-devices
-git+https://github.com/QualiSystems/cloudshell-networking-cisco.git@dev#egg=cloudshell-networking-cisco
+-e git+https://github.com/QualiSystems/cloudshell-automation-api.git@dev#egg=cloudshell-automation-api
+-e git+https://github.com/QualiSystems/cloudshell-networking-cisco.git@dev#egg=cloudshell-networking-cisco
+-e git+https://github.com/QualiSystems/cloudshell-shell-networking-standard.git@dev#egg=cloudshell-shell-networking-standard
+-e git+https://github.com/QualiSystems/cloudshell-shell-core.git@dev#egg=cloudshell-shell-core
