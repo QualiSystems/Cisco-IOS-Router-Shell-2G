@@ -23,6 +23,7 @@ from cloudshell.shell.standards.networking.resource_config import NetworkingReso
 class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
     SUPPORTED_OS = [r"CAT[ -]?OS", r"IOS[ -]?X?[E]?"]
     SHELL_NAME = "Cisco IOS Router 2G"
+    SESSION_POOL_TIMEOUT = 300
 
     def __init__(self):
         super(CiscoIOSShellDriver, self).__init__()
@@ -37,8 +38,10 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         resource_config = NetworkingResourceConfig.from_context(shell_name=self.SHELL_NAME,
                                                                 supported_os=self.SUPPORTED_OS,
                                                                 context=context)
+        # In order to support vlan ranges on routers
+        # "session_pool_timeout" has to be significantly increased
 
-        self._cli = CiscoCli(resource_config)
+        self._cli = CiscoCli(resource_config, self.SESSION_POOL_TIMEOUT)
         return 'Finished initializing'
 
     @GlobalLock.lock
@@ -136,10 +139,15 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
                                                                 context=context, api=api)
 
         cli_handler = self._cli.get_cli_handler(resource_config, logger)
-        connectivity_operations = ConnectivityFlow(logger=logger, cli_handler=cli_handler)
-        logger.info('Start applying connectivity changes, request is: {0}'.format(str(request)))
+        connectivity_operations = ConnectivityFlow(logger=logger,
+                                                   cli_handler=cli_handler,
+                                                   support_vlan_range_str=False,
+                                                   support_multi_vlan_str=False)
+        # logger.info('Start applying connectivity changes, request is: {0}'.format(str(request)))
+        logger.info('Start applying connectivity changes')
         result = connectivity_operations.apply_connectivity_changes(request=request)
-        logger.info('Finished applying connectivity changes, response is: {0}'.format(str(result)))
+        # logger.info('Finished applying connectivity changes, response is: {0}'.format(str(result)))
+        logger.info('Finished applying connectivity changes')
         logger.info('Apply Connectivity changes completed')
         return result
 
