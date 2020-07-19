@@ -21,7 +21,7 @@ from cloudshell.shell.standards.networking.resource_config import NetworkingReso
 
 
 class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInterface, GlobalLock):
-    SUPPORTED_OS = [r"CAT[ -]?OS", r"IOS[ -]?X?[E]?"]
+    SUPPORTED_OS = [r"CAT[ -]?OS", r"IOS[ -]XE", r"IOS(?![ -]XR)"]
     SHELL_NAME = "Cisco IOS Router 2G"
     SESSION_POOL_TIMEOUT = 300
 
