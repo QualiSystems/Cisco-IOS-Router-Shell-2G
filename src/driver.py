@@ -46,7 +46,7 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
 
     @GlobalLock.lock
     def get_inventory(self, context):
-        """Return device structure with all standard attributes
+        """Return device structure with all standard attributes.
 
         :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
         :return: response
@@ -123,10 +123,10 @@ class CiscoIOSShellDriver(ResourceDriverInterface, NetworkingResourceDriverInter
         return result_str
 
     def ApplyConnectivityChanges(self, context, request):
-        """
-        Create vlan and add or remove it to/from network interface
+        """Create vlan and add or remove it to/from network interface.
 
-        :param ResourceCommandContext context: ResourceCommandContext object with all Resource Attributes inside
+        :param ResourceCommandContext context: context object
+                                               with all Resource Attributes inside
         :param str request: request json
         :return:
         """

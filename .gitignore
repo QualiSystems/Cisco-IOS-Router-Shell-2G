@@ -60,3 +60,4 @@ target/
 cloudshell_config.yml
 *.zip
 /src/test*
+/.pip-download-cache
