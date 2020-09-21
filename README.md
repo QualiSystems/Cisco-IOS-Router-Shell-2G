@@ -1,5 +1,6 @@
 [![Build status](https://travis-ci.org/QualiSystems/Cisco-IOS-Router-Shell-2G.svg?branch=dev)](https://travis-ci.org/QualiSystems/Cisco-IOS-Router-Shell-2G)
 [![Coverage Status](https://coveralls.io/repos/github/QualiSystems/Cisco-IOS-Router-Shell-2G/badge.svg)](https://coveralls.io/github/QualiSystems/Cisco-IOS-Router-Shell-2G)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
 ![](https://github.com/QualiSystems/cloudshell-shells-documentaion-templates/blob/master/cloudshell_logo.png)
 
