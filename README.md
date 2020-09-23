@@ -7,7 +7,7 @@
 
 # **Cisco IOS Router 2G Shell**
 
-Release date: September 2018
+Release date: September 2020
 
 Shell version: 3.0.1
 
