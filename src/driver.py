@@ -59,9 +59,8 @@ class CiscoIOSShellDriver(
 
         :param context: an object with all Resource Attributes inside
         """
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME, supported_os=self.SUPPORTED_OS, context=context
-        )
+        api = CloudShellSessionContext(context).get_api()
+        resource_config = NetworkingResourceConfig.from_context(context, api)
         # In order to support vlan ranges on routers
         # "session_pool_timeout" has to be significantly increased
 
@@ -78,25 +77,16 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
         cli_handler = self._cli.get_cli_handler(resource_config, logger)
         snmp_handler = SNMPHandler(resource_config, logger, cli_handler)
 
         autoload_operations = AutoloadFlow(logger=logger, snmp_handler=snmp_handler)
         logger.info("Autoload started")
-        resource_model = NetworkingResourceModel(
-            resource_config.name,
-            resource_config.shell_name,
-            resource_config.family_name,
-        )
+        resource_model = NetworkingResourceModel.from_resource_config(resource_config)
 
         response = autoload_operations.discover(
-            resource_config.supported_os, resource_model
+            self.SUPPORTED_OS, resource_model
         )
         logger.info("Autoload completed")
         return response
@@ -113,12 +103,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
 
         cli_handler = self._cli.get_cli_handler(resource_config, logger)
         send_command_operations = CommandFlow(
@@ -143,12 +128,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
 
         cli_handler = self._cli.get_cli_handler(resource_config, logger)
         send_command_operations = CommandFlow(
@@ -174,12 +154,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
 
         cli_handler = self._cli.get_cli_handler(resource_config, logger)
         connectivity_operations = ConnectivityFlow(
@@ -211,12 +186,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
 
         if not configuration_type:
             configuration_type = "running"
@@ -257,12 +227,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
 
         if not configuration_type:
             configuration_type = "running"
@@ -302,12 +267,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
 
         cli_handler = self._cli.get_cli_handler(resource_config, logger)
         configuration_flow = ConfigurationFlow(
@@ -339,12 +299,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
 
         cli_handler = self._cli.get_cli_handler(resource_config, logger)
         configuration_flow = ConfigurationFlow(
@@ -371,12 +326,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
 
         if not vrf_management_name:
             vrf_management_name = resource_config.vrf_management_name
@@ -399,12 +349,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
         cli_handler = self._cli.get_cli_handler(resource_config, logger)
 
         state_operations = StateFlow(
@@ -427,12 +372,7 @@ class CiscoIOSShellDriver(
         logger = LoggingSessionContext.get_logger_with_thread_id(context)
         api = CloudShellSessionContext(context).get_api()
 
-        resource_config = NetworkingResourceConfig.from_context(
-            shell_name=self.SHELL_NAME,
-            supported_os=self.SUPPORTED_OS,
-            context=context,
-            api=api,
-        )
+        resource_config = NetworkingResourceConfig.from_context(context, api)
 
         cli_handler = self._cli.get_cli_handler(resource_config, logger)
         state_operations = StateFlow(
