@@ -9,7 +9,7 @@
 
 Release date: September 2018
 
-Shell version: 2.0.1
+Shell version: 4.0.0
 
 Document version: 1.0
 
