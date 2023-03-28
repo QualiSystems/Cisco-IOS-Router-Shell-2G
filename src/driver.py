@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 from cloudshell.shell.core.driver_context import (
     AutoLoadCommandContext,
     AutoLoadDetails,
@@ -39,7 +38,10 @@ from cloudshell.networking.cisco.flows.cisco_state_flow import (
     CiscoStateFlow as StateFlow,
 )
 from cloudshell.networking.cisco.snmp.cisco_snmp_handler import (
-    CiscoSnmpHandler as SNMPHandler, CiscoEnableDisableSnmpFlow,
+    CiscoEnableDisableSnmpFlow,
+)
+from cloudshell.networking.cisco.snmp.cisco_snmp_handler import (
+    CiscoSnmpHandler as SNMPHandler,
 )
 
 
@@ -51,7 +53,7 @@ class CiscoIOSShellDriver(
     SESSION_POOL_TIMEOUT = 300
 
     def __init__(self):
-        super(CiscoIOSShellDriver, self).__init__()
+        super().__init__()
         self._cli = None
 
     def initialize(self, context: InitCommandContext) -> str:
@@ -61,8 +63,7 @@ class CiscoIOSShellDriver(
         """
         api = CloudShellSessionContext(context).get_api()
         resource_config = NetworkingResourceConfig.from_context(
-            context=context,
-            api=api
+            context=context, api=api
         )
 
         self._cli = CiscoCli(resource_config)
@@ -84,22 +85,22 @@ class CiscoIOSShellDriver(
             )
             cli_handler = self._cli.get_cli_handler(resource_config, logger)
             enable_disable_flow = CiscoEnableDisableSnmpFlow(cli_handler, logger)
-            snmp_handler = SNMPHandler.from_config(enable_disable_flow, resource_config,
-                                                   logger)
+            snmp_handler = SNMPHandler.from_config(
+                enable_disable_flow, resource_config, logger
+            )
 
             autoload_operations = AutoloadFlow(logger=logger, snmp_handler=snmp_handler)
             logger.info("Autoload started")
             resource_model = NetworkingResourceModel.from_resource_config(
-                resource_config)
-
-            response = autoload_operations.discover(
-                self.SUPPORTED_OS, resource_model
+                resource_config
             )
+
+            response = autoload_operations.discover(self.SUPPORTED_OS, resource_model)
             logger.info("Autoload completed")
             return response
 
     def run_custom_command(
-            self, context: ResourceCommandContext, custom_command: str
+        self, context: ResourceCommandContext, custom_command: str
     ) -> str:
         """Send custom command.
 
@@ -127,7 +128,7 @@ class CiscoIOSShellDriver(
             return response
 
     def run_custom_config_command(
-            self, context: ResourceCommandContext, custom_command: str
+        self, context: ResourceCommandContext, custom_command: str
     ) -> str:
         """Send custom command in configuration mode.
 
@@ -155,7 +156,7 @@ class CiscoIOSShellDriver(
             return result_str
 
     def ApplyConnectivityChanges(
-            self, context: ResourceCommandContext, request: str
+        self, context: ResourceCommandContext, request: str
     ) -> str:
         """
         Create vlan and add or remove it to/from network interface.
@@ -185,11 +186,11 @@ class CiscoIOSShellDriver(
             return result
 
     def save(
-            self,
-            context: ResourceCommandContext,
-            folder_path: str,
-            configuration_type: str,
-            vrf_management_name: str,
+        self,
+        context: ResourceCommandContext,
+        folder_path: str,
+        configuration_type: str,
+        vrf_management_name: str,
     ) -> str:
         """Save selected file to the provided destination.
 
@@ -228,12 +229,12 @@ class CiscoIOSShellDriver(
 
     @GlobalLock.lock
     def restore(
-            self,
-            context: ResourceCommandContext,
-            path: str,
-            configuration_type: str,
-            restore_method: str,
-            vrf_management_name: str,
+        self,
+        context: ResourceCommandContext,
+        path: str,
+        configuration_type: str,
+        restore_method: str,
+        vrf_management_name: str,
     ):
         """Restore selected file to the provided destination.
 
@@ -274,7 +275,7 @@ class CiscoIOSShellDriver(
             logger.info("Restore completed")
 
     def orchestration_save(
-            self, context: ResourceCommandContext, mode: str, custom_params: str
+        self, context: ResourceCommandContext, mode: str, custom_params: str
     ) -> str:
         """Save selected file to the provided destination.
 
@@ -310,10 +311,10 @@ class CiscoIOSShellDriver(
             return response_json
 
     def orchestration_restore(
-            self,
-            context: ResourceCommandContext,
-            saved_artifact_info: str,
-            custom_params: str,
+        self,
+        context: ResourceCommandContext,
+        saved_artifact_info: str,
+        custom_params: str,
     ):
         """Restore selected file to the provided destination.
 
@@ -343,7 +344,7 @@ class CiscoIOSShellDriver(
 
     @GlobalLock.lock
     def load_firmware(
-            self, context: ResourceCommandContext, path: str, vrf_management_name: str
+        self, context: ResourceCommandContext, path: str, vrf_management_name: str
     ):
         """Upload and updates firmware on the resource.
 
@@ -366,14 +367,12 @@ class CiscoIOSShellDriver(
 
             logger.info("Start Load Firmware")
             firmware_operations = FirmwareFlow(
-                cli_handler=cli_handler,
-                logger=logger,
-                resource_config=resource_config
+                cli_handler=cli_handler, logger=logger, resource_config=resource_config
             )
-            response = firmware_operations.load_firmware(
+            firmware_operations.load_firmware(
                 path=path, vrf_management_name=vrf_management_name
             )
-            logger.info("Finish Load Firmware: {}".format(response))
+            logger.info("Finish Load Firmware.")
 
     def health_check(self, context: ResourceCommandContext):
         """Performs device health check.
