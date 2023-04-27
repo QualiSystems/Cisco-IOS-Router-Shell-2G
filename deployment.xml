@@ -8,8 +8,8 @@
     <port>8029</port>
 
     <!-- The server admin username, password and domain to use when deploying -->
-    <username>YOUR_USERNAME</username>
-    <password>YOUR_PASSWORD</password>
+    <username>admin</username>
+    <password>admin</password>
     <domain>Global</domain>
 
     <!-- Simple patterns to filter when sending the driver to the server separated by semicolons (e.g. "file.xml;logs/", also supports regular expressions),
@@ -26,10 +26,10 @@
  may be a path to a directory, in which case all the files and folders under the directory are added into the driver's zip file.
  if the <sources> element is not specified, all the files under the project are added to the driver's zip file -->
             <sources>
-                 <source>src</source>
+                 <source>drivers\aws_shell\src</source>
             </sources>
             <!-- the driver name of the driver to update -->
-            <targetName>CiscoIOSRouterShell2GDriver</targetName>
+            <targetName>AWSShellDriver</targetName>
         </driver>
     </drivers>
 

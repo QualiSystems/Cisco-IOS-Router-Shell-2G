@@ -61,3 +61,5 @@ cloudshell_config.yml
 *.zip
 /src/test*
 /.pip-download-cache
+/.idea
+/src/run_ios_router.py

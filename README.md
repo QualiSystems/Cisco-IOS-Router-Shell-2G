@@ -7,9 +7,9 @@
 
 # **Cisco IOS Router 2G Shell**
 
-Release date: September 2020
+Release date: September 2018
 
-Shell version: 3.0.1
+Shell version: 4.0.0
 
 Document version: 1.0
 
@@ -241,9 +241,9 @@ The Startup or Running configuration is saved to a file named *<ResourceName>-<s
 2. Run the **Load Firmware** resource command. 
 
 3. In the command inputs field, enter the following information:
-	* **Remote Host** (Mandatory). Enter the full path to the firmware file on the remote host, for example: *tftp://10.1.1.1/ios12.SE1-smp-k8.bin* 
-	* **File Path** (Mandatory). Enter the destination filename on the device itself, for example: *bootflash:/ios12.SE1-smp-k8.bin*.
-	
+	* **Path** (Mandatory) Enter the full path to the firmware file on the remote host, for example: *tftp://10.1.1.1/ios12.SE1-smp-k8.bin* 
+    * **VRF Management Name**: (Optional) Provide the VRF Management name, if relevant.
+
 4. Click **Run**.
 
 # References
@@ -259,12 +259,6 @@ To connect with Quali users and experts from around the world, ask questions and
 
 **Cisco IOS Router 2G Shell**
 
-
-### What's New
-
-* SNMP v3 attributes were added to the **Inventory** screen on CloudShell Portal.
-* CLI definition was moved to the driver class to simplify editing.
+For release updates, see the shell's [GitHub releases page](https://github.com/QualiSystems/Cisco-IOS-Router-Shell-2G/releases).
 
 # Known Issues
-
-- Due to the Physical Entity table design, all ports that are missing a SFP or GBIC transceiver will be skipped during **Autoload**.
